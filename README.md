@@ -1,0 +1,2 @@
+# clearview
+Desktop magnification tool
