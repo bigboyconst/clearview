@@ -1,4 +1,4 @@
 # clearview
 Desktop magnification tool
 
-(definitely not a stolen idea from [https://github.com/tsoding/boomer](tsoding))
+(definitely not a stolen idea from [tsoding](https://github.com/tsoding/boomer))
