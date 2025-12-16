@@ -23,8 +23,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 add_executable(clearview
-	src/main.cpp
-	src/capture/capture_x11.cpp
+	src/x11_test.cpp
+	# src/capture/capture_x11.cpp
 	thirdparty/glad/src/glad.c
 )
 
