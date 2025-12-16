@@ -3,7 +3,6 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include "config.hpp"
-#include "platform_types.hpp"
 
 struct Mouse {
 	glm::vec2 current;
@@ -14,7 +13,7 @@ struct Mouse {
 struct Camera {
 	glm::vec2 position;
 	glm::vec2 velocity;
-	float scale;
+	float scale = 1.0f;
 	float deltaScale;
 	glm::vec2 scalePivot;
 
@@ -25,7 +24,6 @@ struct Camera {
 	void update(const Config& cfg, 
 		float dt, 
 		const Mouse& mouse, 
-		const Image& image, 
 		const glm::vec2& windowSize) {
 		if (std::abs(deltaScale) > 0.5f) {
 			glm::vec2 p0 = (scalePivot - (windowSize * 0.5f)) / scale;

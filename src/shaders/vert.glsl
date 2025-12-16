@@ -1,6 +1,6 @@
 #version 460 compatibility
 
-in vec3 aPos;
+in vec2 aPos;
 in vec2 aTexCoord;
 
 out vec2 vTexCoord;
@@ -25,7 +25,7 @@ vec3 toWorld(vec3 v) {
 }
 
 void main() {
-	vec3 p = aPos - vec3(u_cameraPos * vec2(1.0, -1.0), 0.0);
+	vec3 p = vec3(aPos, 0.0) - vec3(u_cameraPos * vec2(1.0, -1.0), 0.0);
 	gl_Position = vec4(toWorld(p), 1.0);
-	vTexCoord = aTexCoord;
+	vTexCoord = vec2(aTexCoord.x, 1.0f - aTexCoord.y);
 }
