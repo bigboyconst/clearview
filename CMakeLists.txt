@@ -24,22 +24,21 @@ FetchContent_MakeAvailable(glm)
 
 if (WIN32)
 	set(CLEARVIEW_BINARY "clearview_win")
-	# DXGI Build
+	# Windows GDI Build
 	add_executable(clearview_win
-		# src/dxgi_test.cpp
 		src/gdi_test.cpp
 		thirdparty/glad/src/glad.c
 	)
 elseif (UNIX AND NOT APPLE)
+	# TODO: Move find_package up here to create wayland binary
 	set(CLEARVIEW_BINARY "clearview_x11")
 	# X11 Build
 	add_executable(clearview_x11
 		src/x11_test.cpp
-		# src/capture/capture_x11.cpp
 		thirdparty/glad/src/glad.c
 	)
 elseif (APPLE)
-	message(FATAL_ERROR "TODO: MAC")
+	message(FATAL_ERROR "MacOS is not yet supported")
 endif()
 
 target_include_directories(${CLEARVIEW_BINARY} PRIVATE 
@@ -57,7 +56,7 @@ target_link_libraries(${CLEARVIEW_BINARY} PRIVATE
 
 # Platform-specific libraries
 
-# Windows (DXGI)
+# Windows (GDI)
 if (WIN32)
 	target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE CAPTURE_WIN_DXGI)
 	target_link_libraries(${CLEARVIEW_BINARY} PRIVATE gdi32 user32)
@@ -88,7 +87,7 @@ if (UNIX AND NOT APPLE)
 	else()
 		message(FATAL_ERROR
 			"Neither X11 nor Wayland development libraries were found.\n"
-			"Install libx11-dev or libwayland-dev."
+			"Install libx11-dev or libwayland-dev with your package manager."
 		)
 	endif()
 endif()

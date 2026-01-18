@@ -8,6 +8,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
 #include <Windows.h>
 
 #include "gl_utils.hpp"
@@ -168,6 +171,24 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    HWND hwnd = glfwGetWin32Window(window);
+
+    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+    style &= ~(WS_OVERLAPPEDWINDOW);
+    style |= WS_POPUP;
+    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    exStyle |= WS_EX_TOOLWINDOW;
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
+
+    SetWindowPos(
+        hwnd,
+        HWND_TOPMOST,
+        0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED
+    );
+
     glfwMakeContextCurrent(window);
     glfwSetWindowPos(window, 0, 0);
     glfwSetWindowAttrib(window, GLFW_FLOATING, GLFW_TRUE);
@@ -302,4 +323,11 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    screen.cleanup();
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
 }
