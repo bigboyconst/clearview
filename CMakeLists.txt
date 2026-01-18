@@ -22,20 +22,34 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glm)
 
-add_executable(clearview
-	src/x11_test.cpp
-	# src/capture/capture_x11.cpp
-	thirdparty/glad/src/glad.c
-)
+if (WIN32)
+	set(CLEARVIEW_BINARY "clearview_win")
+	# DXGI Build
+	add_executable(clearview_win
+		# src/dxgi_test.cpp
+		src/gdi_test.cpp
+		thirdparty/glad/src/glad.c
+	)
+elseif (UNIX AND NOT APPLE)
+	set(CLEARVIEW_BINARY "clearview_x11")
+	# X11 Build
+	add_executable(clearview_x11
+		src/x11_test.cpp
+		# src/capture/capture_x11.cpp
+		thirdparty/glad/src/glad.c
+	)
+elseif (APPLE)
+	message(FATAL_ERROR "TODO: MAC")
+endif()
 
-target_include_directories(clearview PRIVATE 
+target_include_directories(${CLEARVIEW_BINARY} PRIVATE 
 	thirdparty
 	thirdparty/glad/include
 	${GLFW_SOURCE_DIR}/include
 	${GLM_SOURCE_DIR}
 )
 
-target_link_libraries(clearview PRIVATE
+target_link_libraries(${CLEARVIEW_BINARY} PRIVATE
 	OpenGL::GL
 	glfw
 	glm::glm
@@ -45,14 +59,14 @@ target_link_libraries(clearview PRIVATE
 
 # Windows (DXGI)
 if (WIN32)
-	target_compile_definitions(clearview PRIVATE CAPTURE_WIN_DXGI)
-	target_link_libraries(clearview PRIVATE dxgi d3d11)
+	target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE CAPTURE_WIN_DXGI)
+	target_link_libraries(${CLEARVIEW_BINARY} PRIVATE gdi32 user32)
 endif()
 
 # Mac (CoreGraphics)
 if (APPLE)
-	target_compile_definitions(clearview PRIVATE CAPTURE_MAC)
-	target_link_libraries(clearview PRIVATE
+	target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE CAPTURE_MAC)
+	target_link_libraries(${CLEARVIEW_BINARY} PRIVATE
 		"-framework Cocoa"
 		"-framework CoreGraphics"
 		"-framework QuartzCore"
@@ -66,11 +80,11 @@ if (UNIX AND NOT APPLE)
 
 	if (X11_FOUND)
 		message(STATUS "X11 found: enabling X11 screen capture")
-		target_compile_definitions(clearview PRIVATE CAPTURE_X11)
-		target_link_libraries(clearview PRIVATE X11::X11 X11::Xext)
+		target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE CAPTURE_X11)
+		target_link_libraries(${CLEARVIEW_BINARY} PRIVATE X11::X11 X11::Xext)
 	elseif(Wayland_FOUND)
 		message(STATUS "Wayland found: enabling Wayland screen capture")
-		target_compile_definitions(clearview PRIVATE Wayland::Wayland)
+		target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE Wayland::Wayland)
 	else()
 		message(FATAL_ERROR
 			"Neither X11 nor Wayland development libraries were found.\n"
@@ -82,11 +96,11 @@ endif()
 # Platform-specific configuration
 
 if (MSVC)
-	target_compile_options(clearview PRIVATE /W4)
+	target_compile_options(${CLEARVIEW_BINARY} PRIVATE /W4)
 else()
-	target_compile_options(clearview PRIVATE -Wall -Wextra)
+	target_compile_options(${CLEARVIEW_BINARY} PRIVATE -Wall -Wextra)
 endif()
 
 if (APPLE)
-	target_compile_definitions(clearview PRIVATE GL_SILENCE_DEPRECATION)
+	target_compile_definitions(${CLEARVIEW_BINARY} PRIVATE GL_SILENCE_DEPRECATION)
 endif()

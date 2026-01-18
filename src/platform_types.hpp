@@ -14,7 +14,7 @@
 #elifdef CAPTURE_X11
 	#include "capture/capture_x11.hpp"
 	
-
+	
 	using Capture = X11ScreenCapture;
 #elifdef CAPTURE_WAYLAND
 	#include "capture/capture_wayland.hpp"
